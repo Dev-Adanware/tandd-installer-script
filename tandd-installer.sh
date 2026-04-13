@@ -8,7 +8,7 @@ set -e
 #################################################
 
 # ⚠️  REQUIRED: Your internal NTP server IP or hostname
-NTP_SERVER="192.168.0.1"
+NTP_SERVER="10.200.200.193"
 
 # Application version to deploy (use "latest" for latest release)
 APP_VERSION="latest"
