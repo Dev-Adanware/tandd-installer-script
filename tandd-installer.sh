@@ -4,11 +4,8 @@ set -e
 
 #################################################
 #               USER VARIABLES                  #
-#  Fill these values BEFORE running the script #
+#  These will be prompted interactively          #
 #################################################
-
-# ⚠️  REQUIRED: Your internal NTP server IP or hostname
-NTP_SERVER="10.200.200.193"
 
 # Application version to deploy (use "latest" for latest release)
 APP_VERSION="latest"
@@ -36,13 +33,35 @@ echo "           Powered by ADANWARE"
 echo "============================================="
 
 ### -------------------------------
-### 1. VALIDATE USER VARIABLES
+### 1. INTERACTIVE SETUP PROMPTS
 ### -------------------------------
 
-if [[ -z "$NTP_SERVER" || -z "$APP_VERSION" ]]; then
-    echo "❌ Please fill all required variables at the top of the script."
+echo ""
+echo "---------------------------------------------"
+echo "📋 SETUP CONFIGURATION"
+echo "---------------------------------------------"
+
+# Prompt for NTP Server
+if [ -z "${NTP_SERVER:-}" ]; then
+    read -rp "🌐 Enter your NTP server IP or hostname [192.168.0.1]: " NTP_INPUT
+    NTP_SERVER="${NTP_INPUT:-192.168.0.1}"
+fi
+echo "  ✓ NTP Server: $NTP_SERVER"
+
+# Prompt for GitHub credentials
+echo ""
+echo "🔐 GitHub credentials required to download the application:"
+read -rp "   GitHub Username [Dev-Adanware]: " GH_USER_INPUT
+GITHUB_USERNAME="${GH_USER_INPUT:-Dev-Adanware}"
+read -rsp "   GitHub Token (input hidden): " GITHUB_TOKEN
+echo ""
+
+if [ -z "$GITHUB_TOKEN" ]; then
+    echo "❌ GitHub token is required. Please provide a valid token."
     exit 1
 fi
+echo "  ✓ GitHub credentials received"
+echo ""
 
 ### -------------------------------
 ### 2. PREREQUISITE CHECKS
@@ -143,11 +162,11 @@ fi
 ### 4. DOCKER LOGIN (optional - only needed for private images)
 ### -------------------------------
 
-if sudo docker pull ghcr.io/dev-adanware/tanddsrv:$APP_VERSION > /dev/null 2>&1; then
-    echo "✅ Docker image is publicly accessible - no authentication needed"
+echo "Authenticating with GitHub Container Registry..."
+if echo "$GITHUB_TOKEN" | sudo docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin 2>/dev/null; then
+    echo "✅ Docker authenticated successfully"
 else
-    echo "⚠️  Image requires authentication. Trying anonymous access failed."
-    echo "   If you have a GitHub token, set GITHUB_TOKEN and GITHUB_USERNAME in the script."
+    echo "❌ Authentication failed! Check your GitHub username and token."
     exit 1
 fi
 
