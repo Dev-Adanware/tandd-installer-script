@@ -53,7 +53,7 @@ echo ""
 echo "🔐 GitHub credentials required to download the application:"
 read -rp "   GitHub Username [Dev-Adanware]: " GH_USER_INPUT
 GITHUB_USERNAME="${GH_USER_INPUT:-Dev-Adanware}"
-read -rsp "   GitHub Token (input hidden): " GITHUB_TOKEN
+read -rp "   GitHub Token: " GITHUB_TOKEN
 echo ""
 
 if [ -z "$GITHUB_TOKEN" ]; then
