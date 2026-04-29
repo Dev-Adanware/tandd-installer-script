@@ -223,7 +223,7 @@ services:
       - ./tandd-data/backups:/backups
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tandd_user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tandd_user} -d ${POSTGRES_DB:-tandd}"]
       interval: 10s
       timeout: 5s
       retries: 5
