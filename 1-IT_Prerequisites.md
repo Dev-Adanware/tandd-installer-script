@@ -207,7 +207,23 @@ Blocking any of these endpoints may cause deployment or image pull failures.
 
 ---
 
-# 7. Deployment Readiness Confirmation
+
+# 7. Deployment Access (Client Workstation Requirement)
+
+A PC or laptop must be available on the day of deployment to perform administrative access to the Linux server.
+
+## The workstation must:
+
+
+1. Be able to connect to the Linux server via SSH
+2. Have an SSH client available (e.g. Windows CMD, PowerShell, PuTTY, or Linux terminal)
+3. Be connected to the same network or have network access to the server
+4. Allow outbound SSH connection on port 22 (unless otherwise configured)
+
+---
+
+
+# 8. Deployment Readiness Confirmation
 
 After completing all preparation steps, the following information must be provided to proceed with deployment:
 
@@ -217,6 +233,7 @@ After completing all preparation steps, the following information must be provid
 2. Confirmation that Docker is installed and operational
 3. Confirmation that the server specifications match the sizing matrix
 4. Confirmation that internet access or required endpoint whitelisting is completed
+5. Confirmation that a deployment workstation (PC/Laptop) is available
 
 ---
 
@@ -235,7 +252,7 @@ The following information must be shared with the deployment team:
 
 ---
 
-# 8. Recommended Operating System
+# 9. Recommended Operating System
 
 | Operating System | Recommendation |
 | ---------------- | -------------- |
@@ -243,7 +260,7 @@ The following information must be shared with the deployment team:
 
 ---
 
-# 9. Additional Notes
+# 10. Additional Notes
 
 * SSD storage is highly recommended for database performance.
 * Stable internet connectivity is recommended during deployment.

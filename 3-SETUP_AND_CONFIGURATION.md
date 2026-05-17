@@ -27,92 +27,110 @@ This guide covers the setup and configuration of two main components:
 - [ ] (Optional) Assign a static IP to the Base Station for consistent access.
 - [ ] Ensure the Base Station can reach the internet if cloud sync is required.
 
-### 1.3. Accessing the Base Station Interface
-- [ ] Open a web browser and navigate to `http://<Base-Station-IP>`.
-- [ ] Log in using default credentials (refer to TandD documentation, typically `admin` / `password`).
-- [ ] Change default password immediately for security.
-
-### 1.4. Pairing TandD Data Loggers / Sensors
+### 1.3. Pairing TandD Data Loggers / Sensors
 - [ ] Put sensors in registration mode (refer to sensor manual).
 - [ ] On Base Station interface: go to **Device Management** → **Register New Device**.
 - [ ] Wait for confirmation that each device is successfully paired.
 - [ ] Label each sensor with its assigned channel/ID.
 
-### 1.5. Data Transmission Settings
-- [ ] Configure logging interval (e.g., every 5 minutes).
-- [ ] Set up data destination:
-    - Local storage (on Base Station)
-    - Cloud service (if used)
-    - Forwarding to System Dashboard API (custom endpoint)
-- [ ] Save and apply settings.
+---
 
-### 1.6. Verify Base Station Operation
-- [ ] Check that live data appears for each paired sensor.
-- [ ] Force a manual data transmission test.
-- [ ] Confirm data is being sent to the expected destination.
+## 2. Configure T&D Base Station for AMT-T&D Software
+
+After deploying the AMT-T&D software, you need to configure the Base Station to send readings to the server.
+
+### 2.1. Open RTR500WB Settings Utility
+- [ ] Install/Open the **RTR500WB Settings Utility** on any Windows computer connected to the same network as the Base Station.
+
+### 2.2. Connect to Base Station
+- [ ] Click on the **Operation** tab → **Search Network**.
+- [ ] You should see your Base Station listed. **Double-click** on it.
+- [ ] Enter the Base Station password when prompted and click **OK**.
+
+### 2.3. Configure Server Settings
+- [ ] In the settings window, go to **HTTP(s) Settings**.
+- [ ] **Connection Destination:** Choose `Custom`.
+- [ ] **HTTP(s) Server:** Enter the IP address or hostname where the AMT-T&D software is deployed (e.g., `192.168.1.xxx`).
+- [ ] **HTTP(s) Port Number:** `80`
+- [ ] **Destination Path:** `/api/rtr500/device/`
+- [ ] **Secure Connection:** `OFF` (Turn ON only if you have configured HTTPS/SSL).
+- [ ] **Connection Interval:** `5 minutes` (or your preferred interval).
+- [ ] Click **Apply** to save the configuration.
+
+### 2.4. Test Connection
+- [ ] Click on the **Transmission Test** tab (or button).
+- [ ] Click **"Test transmission of the current readings"**.
+- [ ] You should see a success message, indicating the connection between the Base Station and the AMT-T&D software is working.
+
+### 2.5. Repeat for Multiple Base Stations
+- [ ] If you have more than one Base Station, repeat steps **2.1 through 2.4** for each unit.
 
 ---
 
-## 2. System Dashboard Configuration
+## 3. System Dashboard Configuration
 
-### 2.1. Access the Dashboard
+### 3.1. Access the Dashboard
 - [ ] Ensure the System Dashboard application is running (post-deployment).
 - [ ] Open the Dashboard URL in a browser.
 - [ ] Log in with your administrator credentials.
 
-### 2.2. Add TandD Base Station as a Data Source
+### 3.2. Add TandD Base Station as a Data Source
 - [ ] Navigate to **Settings** → **Data Sources** → **Add New**.
 - [ ] Select `TandD Base Station` from the device type list.
 - [ ] Enter Base Station IP address and API port (default: `80` or custom).
 - [ ] Provide API key or credentials if authentication is required.
 - [ ] Test connection – should show `Success`.
 
-### 2.3. Map Sensor Channels
+### 3.3. Map Sensor Channels
 - [ ] Go to **Device Manager** → **TandD Devices**.
 - [ ] Import paired sensors from the Base Station (or add manually by channel ID).
 - [ ] Assign each sensor to a readable name/location (e.g., "Cold Room A - Temp Sensor").
 - [ ] Set unit preferences (°C/°F, humidity %, etc.).
 
-### 2.4. Configure Data Visualization
+### 3.4. Configure Data Visualization
 - [ ] Create dashboards/widgets for real-time sensor values.
 - [ ] Set up charts for historical trending (temperature, humidity, etc.).
 - [ ] Add threshold alerts (e.g., notify if temperature exceeds 8°C).
 
-### 2.5. Alert & Notification Rules
+### 3.5. Alert & Notification Rules
 - [ ] Define alert conditions per sensor.
 - [ ] Configure notification channels: Email, SMS, Webhook, or Dashboard popup.
 - [ ] Test alert by temporarily triggering a threshold event.
 
-### 2.6. System Dashboard Final Checks
+### 3.6. System Dashboard Final Checks
 - [ ] Verify that incoming data from Base Station updates correctly.
 - [ ] Check data logs for completeness (no missing intervals).
 - [ ] Confirm that alert rules are active and working.
 
 ---
 
-## 3. Integration Validation
+## 4. Integration Validation
 
-- [ ] **Data flow test:** Change temperature on a sensor → see real-time update in Dashboard (< 1 min delay).
+- [ ] **Data flow test:** Change temperature on a sensor → see real-time update in Dashboard (< 5 min interval + processing time).
 - [ ] **Alert test:** Force threshold breach → receive notification.
 - [ ] **Restart test:** Reboot Base Station and Dashboard → automatic reconnection.
 - [ ] **Log retention:** Verify historical data is stored and retrievable.
 
 ---
 
-## 4. Troubleshooting Quick Reference
+## 5. Troubleshooting Quick Reference
 
 | Issue | Possible Fix |
 |--------|----------------|
-| Cannot access Base Station web interface | Check network connection, ping IP, restart Base Station |
-| Sensors not pairing | Ensure sensors are in registration mode and within range |
-| Dashboard not receiving data | Verify API endpoint URL and credentials in Data Source settings |
+| Cannot find Base Station in RTR500WB Settings Utility | Ensure Windows PC is on same network; check firewall settings; restart utility |
+| Connection test fails | Verify AMT-T&D software is running; check IP address, port 80, and destination path |
+| "Secure Connection" errors | Set to OFF unless HTTPS is fully configured on server |
+| Dashboard not receiving data | Verify API endpoint URL and credentials; check Base Station transmission logs |
 | Alerts not firing | Check threshold values and notification channel configuration |
 
 ---
 
-## 5. Post-Setup Checklist
+## 6. Post-Setup Checklist
 
-- [ ] Base Station operational with all sensors paired.
+- [ ] Base Station physically connected and powered on.
+- [ ] All sensors paired with Base Station.
+- [ ] RTR500WB Settings Utility configured with correct HTTP(s) settings.
+- [ ] Connection test successful for each Base Station.
 - [ ] System Dashboard showing live sensor data.
 - [ ] Alerts configured and tested.
 - [ ] Backup configuration exported (both Base Station and Dashboard).
@@ -123,4 +141,4 @@ This guide covers the setup and configuration of two main components:
 
 ---
 
-*For TandD-specific details, refer to the official Base Station manual. For Dashboard API details, see `/docs/api/tandd-integration.md` (if available).*
+*For TandD-specific details, refer to the official RTR500WB Base Station manual. For Dashboard API details, see `/docs/api/tandd-integration.md` (if available).*
