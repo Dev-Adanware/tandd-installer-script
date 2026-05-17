@@ -6,17 +6,20 @@ This guide explains how to install and open the AMT Monitoring System.
 
 ---
 
-# Before You Start
+# Before You Start this session
 
 Please make sure you have:
 
-* A PC or laptop
-* Linux Server IP Address
-* Linux Server Username
-* Linux Server Password
-* SNTP/NTP Server IP
-* GitHub Token provided by ADANWARE
-* Confirmation from the IT team that the server is ready
+    A PC or laptop
+    Linux Server IP Address
+    Linux Server Username
+    Linux Server Password
+    SNTP/NTP Server IP
+    GitHub Token provided by ADANWARE
+    Confirmation from the IT team that:
+        The Linux server is ready
+        Docker is installed and running
+        Internet access or required endpoint whitelisting is completed
 
 ---
 
