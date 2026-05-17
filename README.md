@@ -4,16 +4,39 @@ Automated deployment script for the **AMT T&D Data Server** by [ADANWARE](https:
 
 ---
 
-## Requirements
+## Server Requirements
 
-Before running the installer, ensure the target server has:
+### Minimum Specifications
 
-- **OS**: Linux (Ubuntu 20.04+ recommended)
-- **RAM**: Minimum 2 GB
-- **Disk**: Minimum 5 GB free space
-- **Docker**: Version 20.10 or higher
-- **Internet access**: To reach `ghcr.io` (GitHub Container Registry)
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| **OS** | Linux (RHEL 8+, Ubuntu 20.04+) | Ubuntu 22.04 LTS |
+| **CPU** | 2 cores | 4 cores |
+| **RAM** | 4 GB | **8 GB** |
+| **Disk** | 50 GB free | 100 GB free |
+| **Docker** | Version 20.10+ | Latest stable |
+| **Network** | Internet access to `ghcr.io` | — |
+
+> ⚠️ **RAM Warning:** The minimum of **4 GB RAM** is required for stable operation.
+> Servers with only 2–3 GB RAM will experience instability under load, especially with many active sensors.
+
+### Disk Space Estimation by Number of Sensors
+
+| Sensors | Readings/Day | Storage per Year |
+|---------|-------------|-----------------|
+| 10 devices | ~17,000 | ~2 GB |
+| 25 devices | ~43,000 | ~5 GB |
+| 50 devices | ~86,000 | ~10 GB |
+| 100 devices | ~172,000 | ~20 GB |
+
+> Data is automatically retained for **1 year** (365 days). Older readings are purged automatically.
+
+### Additional Requirements
+
 - **GitHub Token**: A personal access token with `read:packages` permission (provided by ADANWARE)
+- **NTP Server**: Internal NTP server IP or hostname for time synchronization
+- **Power**: Server must remain powered on 24/7 for continuous data collection
+- **Sleep/Suspend**: Must be disabled on the OS (installer handles this automatically)
 
 ---
 

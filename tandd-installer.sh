@@ -27,6 +27,49 @@ SSL_ORGANIZATION="ADANWARE"  # Company name
 #              DO NOT EDIT BELOW                #
 #################################################
 
+# Final success / failure message function
+show_final_message() {
+    local status="$1"
+    local reason="${2:-}"
+    SERVER_IP=$(hostname -I | awk '{print $1}')
+
+    if [ "$status" = "success" ]; then
+        echo ""
+        echo "============================================="
+        echo "✅  Installation Successful"
+        echo "============================================="
+        echo ""
+        echo "  The installation is successful."
+        echo ""
+        echo "  Please open the AMT Dashboard in your browser:"
+        echo "    http://$SERVER_IP/"
+        echo ""
+        echo "  Username: admin"
+        echo "  Password: admin123"
+        echo "============================================="
+    else
+        echo ""
+        echo "============================================="
+        echo "❌  Installation Failed"
+        echo "============================================="
+        echo ""
+        echo "  The installation has failed."
+        if [ -n "$reason" ]; then
+            echo "  Reason: $reason"
+        fi
+        echo ""
+        echo "  Please check the error messages above and try again."
+        echo "============================================="
+    fi
+    echo ""
+}
+
+# Helper: show failure reason and exit
+fail() {
+    show_final_message "fail" "$1"
+    exit 1
+}
+
 echo "============================================="
 echo "      AMT-T&D Automated Deployment"
 echo "           Powered by ADANWARE"
@@ -49,16 +92,14 @@ fi
 echo "  ✓ NTP Server: $NTP_SERVER"
 
 # Prompt for GitHub credentials
+GITHUB_USERNAME="Dev-Adanware"
 echo ""
 echo "🔐 GitHub credentials required to download the application:"
-read -rp "   GitHub Username [Dev-Adanware]: " GH_USER_INPUT
-GITHUB_USERNAME="${GH_USER_INPUT:-Dev-Adanware}"
 read -rp "   GitHub Token: " GITHUB_TOKEN
 echo ""
 
 if [ -z "$GITHUB_TOKEN" ]; then
-    echo "❌ GitHub token is required. Please provide a valid token."
-    exit 1
+    fail "GitHub token is required. Please provide a valid GitHub token."
 fi
 echo "  ✓ GitHub credentials received"
 echo ""
@@ -70,8 +111,7 @@ echo ""
 echo "Checking system prerequisites..."
 # Check Linux
 if [[ "$(uname -s)" != "Linux" ]]; then
-    echo "❌ This script must run on Linux."
-    exit 1
+    fail "This script must run on Linux."
 else
     echo "✅ Linux OS verified"
 fi
@@ -79,8 +119,7 @@ fi
 # Check RAM ≥ 2GB
 TOTAL_RAM=$(free -m | awk '/Mem:/ {print $2}')
 if [ "$TOTAL_RAM" -lt 2000 ]; then
-    echo "❌ Minimum 2GB RAM required. Current: ${TOTAL_RAM}MB"
-    exit 1
+    fail "Minimum 2GB RAM required. Current: ${TOTAL_RAM}MB"
 else
     echo "✅ RAM check passed (${TOTAL_RAM}MB)"
 fi
@@ -88,16 +127,14 @@ fi
 # Check Disk ≥ 20GB
 AVAILABLE_DISK=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
 if [ "$AVAILABLE_DISK" -lt 5 ]; then
-    echo "❌ Minimum 5GB free disk space required. Available: ${AVAILABLE_DISK}GB"
-    exit 1
+    fail "Minimum 5GB free disk space required. Available: ${AVAILABLE_DISK}GB"
 else
     echo "✅ Disk space check passed (${AVAILABLE_DISK}GB free)"
 fi
 
 # Check Docker installed
 if ! command -v docker &> /dev/null; then
-    echo "❌ Docker is not installed."
-    exit 1
+    fail "Docker is not installed."
 fi
 
 # Check Docker version ≥ 20.10
@@ -105,16 +142,14 @@ DOCKER_VERSION=$(docker --version | awk '{print $3}' | sed 's/,//')
 REQUIRED_VERSION="20.10"
 
 if [[ "$(printf '%s\n' "$REQUIRED_VERSION" "$DOCKER_VERSION" | sort -V | head -n1)" != "$REQUIRED_VERSION" ]]; then
-    echo "❌ Docker 20.10+ required. Current version: $DOCKER_VERSION"
-    exit 1
+    fail "Docker 20.10+ required. Current version: $DOCKER_VERSION"
 else
     echo "✅ Docker version verified ($DOCKER_VERSION)"
 fi
 
 # Check connectivity to GHCR
 if ! curl -s https://ghcr.io > /dev/null; then
-    echo "❌ Cannot reach ghcr.io. Check firewall or outbound access."
-    exit 1
+    fail "Cannot reach ghcr.io. Check firewall or outbound access."
 else
     echo "✅ Internet / GHCR connectivity verified"
 fi
@@ -166,8 +201,8 @@ echo "Authenticating with GitHub Container Registry..."
 if echo "$GITHUB_TOKEN" | sudo docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin 2>/dev/null; then
     echo "✅ Docker authenticated successfully"
 else
-    echo "❌ Authentication failed! Check your GitHub username and token."
-    exit 1
+else
+    fail "Authentication failed. Wrong token or no access to the repository."
 fi
 
 ### -------------------------------
@@ -442,6 +477,5 @@ fi
 
 echo "---------------------------------------------"
 echo ""
-echo "📚 For more information, visit the documentation."
-echo "🆘 For support, contact ADANWARE."
-echo ""
+
+show_final_message "success"
