@@ -35,7 +35,6 @@ The installer will ask for:
 ---------------------------------------------
 🌐 Enter your NTP server IP or hostname [192.168.0.1]: <your NTP server>
 🔐 GitHub credentials required to download the application:
-   GitHub Username [Dev-Adanware]: 
    GitHub Token (input hidden): <token provided by ADANWARE>
 ```
 
