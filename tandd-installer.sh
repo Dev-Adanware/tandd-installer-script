@@ -76,38 +76,10 @@ echo "           Powered by ADANWARE"
 echo "============================================="
 
 ### -------------------------------
-### 1. INTERACTIVE SETUP PROMPTS
+### 1. PREREQUISITE CHECKS
 ### -------------------------------
 
 echo ""
-echo "---------------------------------------------"
-echo "📋 SETUP CONFIGURATION"
-echo "---------------------------------------------"
-
-# Prompt for NTP Server
-if [ -z "${NTP_SERVER:-}" ]; then
-    read -rp "🌐 Enter your NTP server IP or hostname [192.168.0.1]: " NTP_INPUT
-    NTP_SERVER="${NTP_INPUT:-192.168.0.1}"
-fi
-echo "  ✓ NTP Server: $NTP_SERVER"
-
-# Prompt for GitHub credentials
-GITHUB_USERNAME="Dev-Adanware"
-echo ""
-echo "🔐 GitHub credentials required to download the application:"
-read -rp "   GitHub Token: " GITHUB_TOKEN
-echo ""
-
-if [ -z "$GITHUB_TOKEN" ]; then
-    fail "GitHub token is required. Please provide a valid GitHub token."
-fi
-echo "  ✓ GitHub credentials received"
-echo ""
-
-### -------------------------------
-### 2. PREREQUISITE CHECKS
-### -------------------------------
-
 echo "Checking system prerequisites..."
 # Check Linux
 if [[ "$(uname -s)" != "Linux" ]]; then
@@ -157,6 +129,35 @@ fi
 echo "---------------------------------------------"
 
 ### -------------------------------
+### 2. INTERACTIVE SETUP PROMPTS
+### -------------------------------
+
+echo ""
+echo "---------------------------------------------"
+echo "📋 SETUP CONFIGURATION"
+echo "---------------------------------------------"
+
+# Prompt for NTP Server
+if [ -z "${NTP_SERVER:-}" ]; then
+    read -rp "🌐 Enter your NTP server IP or hostname [192.168.0.1]: " NTP_INPUT
+    NTP_SERVER="${NTP_INPUT:-192.168.0.1}"
+fi
+echo "  ✓ NTP Server: $NTP_SERVER"
+
+# Prompt for GitHub credentials
+GITHUB_USERNAME="Dev-Adanware"
+echo ""
+echo "🔐 GitHub credentials required to download the application:"
+read -rp "   GitHub Token: " GITHUB_TOKEN
+echo ""
+
+if [ -z "$GITHUB_TOKEN" ]; then
+    fail "GitHub token is required. Please provide a valid GitHub token."
+fi
+echo "  ✓ GitHub credentials received"
+echo ""
+
+### -------------------------------
 ### 3. CREATE WORKING DIRECTORY
 ### -------------------------------
 
@@ -200,7 +201,6 @@ fi
 echo "Authenticating with GitHub Container Registry..."
 if echo "$GITHUB_TOKEN" | sudo docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin 2>/dev/null; then
     echo "✅ Docker authenticated successfully"
-else
 else
     fail "Authentication failed. Wrong token or no access to the repository."
 fi
@@ -352,15 +352,13 @@ sleep 15
 if sudo docker ps | grep -q tandd-postgres; then
     echo "✅ PostgreSQL database is running"
 else
-    echo "❌ PostgreSQL failed to start"
-    exit 1
+    fail "PostgreSQL container failed to start."
 fi
 
 if sudo docker ps | grep -q tandd-app; then
     echo "✅ Application is running"
 else
-    echo "❌ Application failed to start"
-    exit 1
+    fail "Application container failed to start."
 fi
 
 if sudo docker ps | grep -q tandd-backup; then
