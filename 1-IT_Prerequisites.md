@@ -6,9 +6,21 @@ This document describes the infrastructure, network, and system requirements req
 
 ---
 
+
 # 1. Server / VM Preparation
 
 Prepare a Linux server or virtual machine with the specifications based on the expected number of sensors.
+
+The server must be designed for **24/7 continuous operation**. It must remain always ON and accessible.
+
+### Important Requirement
+
+* The server must run **24/7 without interruption**
+* **Sleep mode, hibernate mode, or power-saving modes must be disabled**
+* The system must stay continuously available for real-time monitoring and data collection
+
+This is mandatory to ensure stable data processing and uninterrupted system operation.
+
 
 ## Recommended Server Specifications
 
