@@ -6,20 +6,21 @@ This guide explains how to install and open the AMT Monitoring System.
 
 ---
 
-# Before You Start this session
+# Before You Start
 
 Please make sure you have:
 
-    A PC or laptop
-    Linux Server IP Address
-    Linux Server Username
-    Linux Server Password
-    SNTP/NTP Server IP
-    GitHub Token provided by ADANWARE
-    Confirmation from the IT team that:
-        The Linux server is ready
-        Docker is installed and running
-        Internet access or required endpoint whitelisting is completed
+* A PC or laptop
+* Linux Server IP Address
+* Linux Server Username
+* Linux Server Password
+* SNTP/NTP Server IP
+* GitHub Token provided by ADANWARE
+* Confirmation from the IT team that:
+
+  * The Linux server is ready
+  * Docker is installed and running
+  * Internet access or required endpoint whitelisting is completed
 
 ---
 
@@ -27,19 +28,19 @@ Please make sure you have:
 
 Open CMD or Terminal and type:
 
-```bash
+```bash id="k0w0gm"
 ssh username@SERVER_IP
 ```
 
 Example:
 
-```bash
+```bash id="m2bxzl"
 ssh admin@192.168.0.50
 ```
 
 You will see:
 
-```text
+```text id="u7sl7n"
 admin@192.168.0.50's password:
 ```
 
@@ -51,7 +52,7 @@ Type the Linux server password and press ENTER.
 
 Copy and paste the following command:
 
-```bash
+```bash id="c6v67k"
 curl -fsSL https://raw.githubusercontent.com/Dev-Adanware/tandd-installer-script/main/tandd-installer.sh -o tandd-installer.sh
 ```
 
@@ -63,7 +64,7 @@ Press ENTER.
 
 Copy and paste:
 
-```bash
+```bash id="zch5yr"
 sudo bash tandd-installer.sh
 ```
 
@@ -77,7 +78,7 @@ If asked for password, enter the Linux server password.
 
 When you see:
 
-```text
+```text id="eqv4zm"
 🌐 Enter your NTP server IP or hostname
 ```
 
@@ -87,19 +88,7 @@ Type the SNTP/NTP IP provided by the IT team.
 
 When you see:
 
-```text
-GitHub Username [Dev-Adanware]:
-```
-
-Just press ENTER.
-
-Do NOT change anything.
-
----
-
-When you see:
-
-```text
+```text id="4g8xzr"
 GitHub Token:
 ```
 
@@ -113,7 +102,7 @@ Press ENTER.
 
 Please wait until the installation is completed.
 
-This may take several minutes.
+This may take several minutes depending on internet speed.
 
 ---
 
@@ -124,13 +113,13 @@ After installation is completed:
 1. Open a web browser
 2. Type:
 
-```text
+```text id="7pkhl9"
 http://SERVER_IP
 ```
 
 Example:
 
-```text
+```text id="tds8mq"
 http://192.168.0.50
 ```
 
@@ -140,9 +129,16 @@ http://192.168.0.50
 
 Use the following login information:
 
-```text
+```text id="3vl3kg"
 Username: admin
 Password: admin123
 ```
 
 You can now access the dashboard.
+
+---
+
+# Notes
+
+* Internet access or endpoint whitelisting is only required during installation and future system updates.
+* If HTTPS is required, the default self-signed certificate must be replaced with a trusted SSL certificate provided by the customer IT team.
