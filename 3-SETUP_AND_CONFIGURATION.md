@@ -17,23 +17,38 @@ This guide covers the setup and configuration of two main components:
 
 ## 1. TandD Base Station Setup
 
-### 1.1. Physical Connection
-- [ ] Connect the Base Station to a power source using the supplied adapter.
-- [ ] Connect the Base Station to your local network via Ethernet cable (or prepare Wi-Fi settings if supported).
-- [ ] Verify LED indicators: Power and Network/Activity lights should be stable or blinking normally.
+### 1.1. Installing the Software
 
-### 1.2. Network Configuration
-- [ ] Obtain the Base Station IP address from your router's DHCP client list or use the TandD Device Finder utility.
-- [ ] (Optional) Assign a static IP to the Base Station for consistent access.
-- [ ] Ensure the Base Station can reach the internet if cloud sync is required.
+- [ ] Dwonload RTR500BW for Windows from the T&D Website and install it to your PC.
+    * Do not connect the Base Unit to your computer until the software has been installed.
 
-### 1.3. Pairing TandD Data Loggers / Sensors
-- [ ] Put sensors in registration mode (refer to sensor manual).
-- [ ] On Base Station interface: go to **Device Management** → **Register New Device**.
-- [ ] Wait for confirmation that each device is successfully paired.
-- [ ] Label each sensor with its assigned channel/ID.
+    
+        tandd.com/software/rtr500bwwin.html
 
+### 1.2. Making Initial Settings for the Base Unit
+- [ ] Open RTR500BW for Windows, and then open RTR500BW Settings Utility.
+- [ ] Connect the Base Unit with the supplied AC adaptor to a power source.
+- [ ] Connect the Base Unit with the supplied USB cable to your computer.
+        * The USB driver installation will start automatically.
+        * When the USB driver installation is completed, the RTR500BW settings window will automatically open.
+- [ ] Enter the following information in the [Base Unit Settings] window.
 ---
+
+|  |   |
+| -------------------- | ------------------------------------------------------ |
+| Base Unit Name       | Assign a unique name for each Base Unit |
+| Connection  Password     |  Enter a password here for connecting to the Base Unit via Bluetooth or LAN. |
+
+
+The factory default password is "password".
+        
+---
+
+### 1.3 Making Initial Settings for the Base Unit
+- [ ] Open RTR500BW for Windows, and then open RTR500BW Settings Utility.
+- [ ] Connect the Base Unit with the supplied AC adaptor to a power source.
+- [ ] Connect the Base Unit with the supplied USB cable to your computer.
+        • The USB driver installation will start automatically.
 
 ## 2. Configure T&D Base Station for AMT-T&D Software
 
@@ -74,46 +89,76 @@ After deploying the AMT-T&D software, you need to configure the Base Station to 
 - [ ] Open the Dashboard URL in a browser.
 - [ ] Log in with your administrator credentials.
 
-### 3.2. Add TandD Base Station as a Data Source
-- [ ] Navigate to **Settings** → **Data Sources** → **Add New**.
-- [ ] Select `TandD Base Station` from the device type list.
-- [ ] Enter Base Station IP address and API port (default: `80` or custom).
-- [ ] Provide API key or credentials if authentication is required.
-- [ ] Test connection – should show `Success`.
+<p align="center">
+  <img src="./images/AMT-login.png" width="250">
+</p>
 
-### 3.3. Map Sensor Channels
-- [ ] Go to **Device Manager** → **TandD Devices**.
-- [ ] Import paired sensors from the Base Station (or add manually by channel ID).
-- [ ] Assign each sensor to a readable name/location (e.g., "Cold Room A - Temp Sensor").
-- [ ] Set unit preferences (°C/°F, humidity %, etc.).
+- [ ] Make sure there are some readings data on the dashboard.
 
-### 3.4. Configure Data Visualization
-- [ ] Create dashboards/widgets for real-time sensor values.
-- [ ] Set up charts for historical trending (temperature, humidity, etc.).
-- [ ] Add threshold alerts (e.g., notify if temperature exceeds 8°C).
+<p align="center">
+  <img src="./images/amt-Settings.png" width="700">
+</p>
 
-### 3.5. Alert & Notification Rules
-- [ ] Define alert conditions per sensor.
-- [ ] Configure notification channels: Email, SMS, Webhook, or Dashboard popup.
-- [ ] Test alert by temporarily triggering a threshold event.
+### 3.2. Departments
+- [ ] Navigate to **Settings** → **Departments**..
+- [ ] Select `Departments Station` from the top tabs.
+- [ ] Enter Departments name.
+- [ ] Enter description ( optional).
+- [ ] Click **Save**.
 
-### 3.6. System Dashboard Final Checks
-- [ ] Verify that incoming data from Base Station updates correctly.
-- [ ] Check data logs for completeness (no missing intervals).
-- [ ] Confirm that alert rules are active and working.
+<p align="center">
+  <img src="./images/Departments_1.png" width="700">
+</p>
 
+- [ ] Click **Sensors**.
+- [ ] Select sensors to assign to the department you created.
+- [ ] Click **Save**.
+<p align="center">
+  <img src="./images/Departments_2.png" width="700">
+</p>
+
+### 3.3. Users
+- [ ] Go to **Settings** → **Users**.
+- [ ] Select `Users Station` from the top tabs.
+- [ ] Click **Add User**.
+- [ ] Fill the user details and select the role.
+- [ ] Select Department/s from the `Assigned Departments Station` to be assigned to this user.
+- [ ] Click **Save**.
+<p align="center">
+  <img src="./images/amt-users.png" width="700">
+</p>
+
+
+
+### 3.4. Email
+- [ ] Go to **Settings** → **Email**.
+- [ ] Select `Email Station` from the top tabs.
+
+### 3.5. SMS
+- [ ] Go to **Settings** → **SMS**.
+- [ ] Select `SMS Station` from the top tabs.
+- [ ] Fill the  `SMS details` from the SMS provider.
+<p align="center">
+  <img src="./images/amt-sms.png" width="700">
+</p>
+
+
+### 3.6. Backup and Restore
+- [ ] Go to **Settings** → **Backup/Restore**.
+- [ ] Select `Backup/Restore Station` from the top tabs.
+<p align="center">
+  <img src="./images/amt-backup.png" width="700">
+</p>
+
+### 3.7. Reports
+- [ ] Go to **Settings** → **Reports**.
+- [ ] Select `Reports Station` from the top tabs.
+<p align="center">
+  <img src="./images/amt-reports.png" width="700">
+</p>
 ---
 
-## 4. Integration Validation
-
-- [ ] **Data flow test:** Change temperature on a sensor → see real-time update in Dashboard (< 5 min interval + processing time).
-- [ ] **Alert test:** Force threshold breach → receive notification.
-- [ ] **Restart test:** Reboot Base Station and Dashboard → automatic reconnection.
-- [ ] **Log retention:** Verify historical data is stored and retrievable.
-
----
-
-## 5. Troubleshooting Quick Reference
+## 4. Troubleshooting Quick Reference
 
 | Issue | Possible Fix |
 |--------|----------------|
@@ -124,21 +169,3 @@ After deploying the AMT-T&D software, you need to configure the Base Station to 
 | Alerts not firing | Check threshold values and notification channel configuration |
 
 ---
-
-## 6. Post-Setup Checklist
-
-- [ ] Base Station physically connected and powered on.
-- [ ] All sensors paired with Base Station.
-- [ ] RTR500WB Settings Utility configured with correct HTTP(s) settings.
-- [ ] Connection test successful for each Base Station.
-- [ ] System Dashboard showing live sensor data.
-- [ ] Alerts configured and tested.
-- [ ] Backup configuration exported (both Base Station and Dashboard).
-- [ ] Setup documentation saved in repo.
-
-> **Next steps after setup:**  
-> Proceed to user acceptance testing or monitoring phase.
-
----
-
-*For TandD-specific details, refer to the official RTR500WB Base Station manual. For Dashboard API details, see `/docs/api/tandd-integration.md` (if available).*
