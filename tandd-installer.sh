@@ -332,7 +332,7 @@ prompt_config() {
     log_info "GitHub credentials required to download the application."
 
     if [ -z "${GITHUB_TOKEN:-}" ]; then
-        read -rsp "  GitHub Token: " GITHUB_TOKEN
+        read -rp "  GitHub Token: " GITHUB_TOKEN
         echo ""
     fi
 
