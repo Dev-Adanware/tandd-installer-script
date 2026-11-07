@@ -9,7 +9,7 @@ ADANWARE provides a password-protected [download link](https://cloud.dadi411-fam
 - `amt-tandd-offline-licensing-v1.23.2.tar.gz`
 - `amt-tandd-offline-licensing-v1.23.2.tar.gz.sha256`
 
-The published archive SHA-256 is `65017442ba21fe2316e17fdac86cc436f03091b9ec294b08f5d82ab0f12be450`. Stop and contact ADANWARE if either checksum verification below fails.
+The final release archive SHA-256 is `65017442ba21fe2316e17fdac86cc436f03091b9ec294b08f5d82ab0f12be450`. The package downloaded through the customer link passed SHA-256 verification. Stop and contact ADANWARE if either checksum verification below fails on your copy.
 
 ## Server requirements
 
@@ -75,10 +75,10 @@ The installer verifies the package, loads the included Docker images locally, an
 
 1. Open `http://SERVER_IP/` in a browser that can reach the server.
 2. The **Activation Required** page displays the Installation ID. Copy it and provide it to ADANWARE.
-3. ADANWARE issues a customer-specific signed `license.json` for the supported license type.
+3. ADANWARE issues a customer-specific signed v2 Trial or Perpetual `license.json`.
 4. Upload `license.json` through the activation page, then continue to login after successful activation.
 
-No trial is granted automatically. The browser and target server do not need internet access for activation; the license file is issued through your agreed process with ADANWARE.
+Activation is mandatory for a fresh installation; no trial is granted automatically. The browser and target server do not need internet access for activation; the license file is issued through your agreed process with ADANWARE.
 
 ## Upgrade an existing customer installation
 
@@ -103,9 +103,9 @@ Afterward, compare application data and license state with the pre-upgrade recor
 
 ## License management
 
-Signed trial licenses have an expiration date. A valid supported license and its Installation ID are stored with persistent application data and are preserved by supported upgrades and container recreation while the signing key remains trusted. Administrators can view the Installation ID and manage supported license actions under **Settings → About**; the activation page displays the Installation ID when activation is required.
+Signed v2 Trial licenses have an expiration date. Signed v2 Perpetual licenses do not expire. The final release also accepts existing v1 licenses. A valid license and its persistent Installation ID survive supported software upgrades and container recreation while the signing key remains trusted.
 
-The approved v1.23.2 upgrade guide does **not** establish perpetual-license semantics or trial-to-perpetual conversion for this release. Ask ADANWARE to confirm availability and the supported procedure before relying on either. The browser-based **Offline Software Update** section is currently disabled; use the approved offline installer for updates.
+Administrators can view the Installation ID and manage licenses under **Settings → About**. They can convert a Trial installation to Perpetual by uploading the customer-specific signed Perpetual `license.json` there; reinstalling is not required. License management is administrator-only. The **Offline Software Update** controls are displayed but disabled; use the approved offline installer for updates.
 
 ## Verify the deployment
 
