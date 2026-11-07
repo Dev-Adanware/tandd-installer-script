@@ -4,6 +4,8 @@
 
 This document describes the infrastructure, network, and system requirements required before deploying the AMT Monitoring System.
 
+Choose the deployment method before preparing the server: the [online installer](./2-Deployment_USER_GUIDE.md) requires the outbound access described in section 6.3; the [v1.23.2 offline package](./4-OFFLINE_DEPLOYMENT.md) uses local images and needs no GitHub token or registry access on the target server. Both methods need a working Docker Engine and Docker Compose plugin. The offline package supports x86-64/amd64 Linux servers.
+
 ---
 
 
@@ -155,9 +157,9 @@ HTTPS access is supported, but the customer must replace the self-signed certifi
 
 ---
 
-# 6.3 Internet Access / Outbound Firewall Rules
+# 6.3 Internet Access / Outbound Firewall Rules (online installation only)
 
-The server requires outbound HTTPS access to trusted third-party providers for Docker image retrieval during:
+For the online installer, the server requires outbound HTTPS access to third-party providers for Docker image retrieval during:
 
 Initial system installation
 Future system updates
@@ -197,6 +199,8 @@ Internet access or the required endpoint whitelisting is only needed for install
 
 Blocking any of these endpoints may cause deployment or image pull failures.
 
+These endpoints are **not required on the target server for v1.23.2 offline installation or upgrade** when Docker prerequisites and the complete verified package are available. Obtain the package on a separate download machine and transfer it using approved media or network access. See the [offline deployment guide](./4-OFFLINE_DEPLOYMENT.md).
+
 ---
 
 ## Security Note
@@ -232,7 +236,7 @@ After completing all preparation steps, the following information must be provid
 1. Confirmation that the Linux server is ready
 2. Confirmation that Docker is installed and operational
 3. Confirmation that the server specifications match the sizing matrix
-4. Confirmation that internet access or required endpoint whitelisting is completed
+4. For online deployment, confirmation that internet access or required endpoint whitelisting is completed; for offline deployment, confirmation that the complete package can be transferred to the server
 5. Confirmation that a deployment workstation (PC/Laptop) is available
 
 ---
@@ -263,6 +267,6 @@ The following information must be shared with the deployment team:
 # 10. Additional Notes
 
 * SSD storage is highly recommended for database performance.
-* Stable internet connectivity is recommended during deployment.
+* Stable internet connectivity is recommended for online deployment. It is not required on the offline target server when all prerequisites and package files are available.
 * Docker services must remain enabled and running.
 * The server must have sufficient free storage for future database growth.

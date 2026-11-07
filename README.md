@@ -12,7 +12,14 @@ Please see here to check the system requirements:
 - [IT Prerequisites Document](./1-IT_Prerequisites.md)
 ---
 
-## Installation
+## Choose a deployment option
+
+- **Online installation:** Use the existing GitHub-based installer below when its documented compatibility and outbound access requirements are met. See [IT prerequisites](./1-IT_Prerequisites.md) and the [online deployment guide](./2-Deployment_USER_GUIDE.md).
+- **Offline installation or upgrade (v1.23.2):** Obtain the complete package from ADANWARE, transfer it to the Linux server, and install using local Docker images without accessing GitHub or Docker registries from that server. Follow the [offline deployment guide](./4-OFFLINE_DEPLOYMENT.md). The online installer below is not the offline upgrade procedure.
+
+---
+
+## Online installation (GitHub-based installer)
 
 ### Step 1 — Download the installer
 
@@ -40,7 +47,7 @@ The installer will ask for:
 
 ---
 
-## What the Installer Does
+## What the online installer does
 
 1. ✅ Verifies system prerequisites (OS, RAM, disk, Docker)
 2. ✅ Creates working directory at `/opt/amt-tandd/`
@@ -54,7 +61,7 @@ The installer will ask for:
 
 ---
 
-## After Installation
+## After online installation
 
 Access the application at:
 
@@ -71,7 +78,7 @@ Access the application at:
 
 ---
 
-## SSL Certificate Setup
+## SSL Certificate Setup (online installation)
 
 On **first-time deployment**, the installer generates a Certificate Signing Request (CSR):
 
@@ -91,9 +98,9 @@ On **re-deployment**, existing SSL certificates are automatically backed up and 
 
 ---
 
-## Re-deployment / Update
+## Online re-deployment / update
 
-To update the application to the latest version, simply re-run the installer:
+For a compatible online installation, re-run the online installer to update the application:
 
 ```bash
 sudo bash tandd-installer.sh
@@ -106,7 +113,7 @@ The installer will:
 
 ---
 
-## Data & Backups
+## Data & Backups (online installation)
 
 | Item | Location |
 |------|----------|

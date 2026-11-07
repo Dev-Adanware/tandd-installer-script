@@ -1,12 +1,12 @@
 # AMT Monitoring System
 
-## Quick Installation Guide
+## Quick Online Installation Guide
 
-This guide explains how to install and open the AMT Monitoring System.
+This guide explains the existing GitHub-based online installation. It applies when its documented compatibility and outbound access requirements are met. For the complete v1.23.2 package, use the [offline installation and upgrade guide](./4-OFFLINE_DEPLOYMENT.md) instead.
 
 ---
 
-# Before You Start
+# Before You Start (online installation)
 
 Please make sure you have:
 
@@ -24,7 +24,7 @@ Please make sure you have:
 
 ---
 
-# Step 1 — Connect to the Linux Server
+# Step 1 — Connect to the Linux Server (online installation)
 
 Open CMD or Terminal and type:
 
@@ -140,5 +140,5 @@ You can now access the dashboard.
 
 # Notes
 
-* Internet access or endpoint whitelisting is only required during installation and future system updates.
+* For this online procedure, internet access or endpoint whitelisting is required during installation and future system updates. The offline procedure does not require GitHub or Docker registry access on the target server.
 * If HTTPS is required, the default self-signed certificate must be replaced with a trusted SSL certificate provided by the customer IT team.
