@@ -1,144 +1,93 @@
-# AMT Monitoring System
+# AMT T&D Deployment Guide
 
-## Quick Online Installation Guide
+Before starting, check the [IT prerequisites](./1-IT_Prerequisites.md). Both methods need a Linux server with Docker, Docker Compose, SSH access, and sudo privileges. Online installation needs internet access and a GitHub token from ADANWARE. Offline installation needs Python 3; the server does not need internet access.
 
-This guide explains the existing GitHub-based online installation. It applies when its documented compatibility and outbound access requirements are met. For the complete v1.23.2 package, use the [offline installation and upgrade guide](./4-OFFLINE_DEPLOYMENT.md) instead.
+## Option A — Online Installation (`v1.23.2-lic-3`)
 
----
+### 1. Connect to the server
 
-# Before You Start (online installation)
-
-Please make sure you have:
-
-* A PC or laptop
-* Linux Server IP Address
-* Linux Server Username
-* Linux Server Password
-* SNTP/NTP Server IP
-* GitHub Token provided by ADANWARE
-* Confirmation from the IT team that:
-
-  * The Linux server is ready
-  * Docker is installed and running
-  * Internet access or required endpoint whitelisting is completed
-
----
-
-# Step 1 — Connect to the Linux Server (online installation)
-
-Open CMD or Terminal and type:
-
-```bash id="k0w0gm"
+```bash
 ssh username@SERVER_IP
 ```
 
-Example:
+### 2. Download and run the installer
 
-```bash id="m2bxzl"
-ssh admin@192.168.0.50
-```
-
-You will see:
-
-```text id="u7sl7n"
-admin@192.168.0.50's password:
-```
-
-Type the Linux server password and press ENTER.
-
----
-
-# Step 2 — Download the Installer
-
-Copy and paste the following command:
-
-```bash id="c6v67k"
+```bash
 curl -fsSL https://raw.githubusercontent.com/Dev-Adanware/tandd-installer-script/main/tandd-installer.sh -o tandd-installer.sh
-```
-
-Press ENTER.
-
----
-
-# Step 3 — Run the Installer
-
-Copy and paste:
-
-```bash id="zch5yr"
 sudo bash tandd-installer.sh
 ```
 
-Press ENTER.
+Enter your NTP server and the GitHub token provided by ADANWARE when prompted.
 
-If asked for password, enter the Linux server password.
+### 3. Open the application
 
----
+Open this address in a browser:
 
-# Step 4 — Enter the Required Information
-
-When you see:
-
-```text id="eqv4zm"
-🌐 Enter your NTP server IP or hostname
+```text
+http://SERVER_IP/
 ```
 
-Type the SNTP/NTP IP provided by the IT team.
+## Option B — Offline Installation (`v1.23.2-lic-3`)
 
----
+Ask ADANWARE for the corrected package and its matching checksum. After you receive both files, use these commands.
 
-When you see:
+Package name:
 
-```text id="4g8xzr"
-GitHub Token:
+```text
+amt-tandd-offline-licensing-v1.23.2-lic-3.tar.gz
 ```
 
-Paste the GitHub Token provided by ADANWARE.
+### 1. Transfer the files
 
-Press ENTER.
+From your computer, in the folder containing the package and checksum, run:
 
----
-
-# Step 5 — Wait for Installation to Finish
-
-Please wait until the installation is completed.
-
-This may take several minutes depending on internet speed.
-
----
-
-# Step 6 — Open the AMT Monitoring System
-
-After installation is completed:
-
-1. Open a web browser
-2. Type:
-
-```text id="7pkhl9"
-http://SERVER_IP
+```bash
+scp amt-tandd-offline-licensing-v1.23.2-lic-3.tar.gz \
+  amt-tandd-offline-licensing-v1.23.2-lic-3.tar.gz.sha256 \
+  username@SERVER_IP:~/
 ```
 
-Example:
+### 2. Connect to the server and verify the checksum
 
-```text id="tds8mq"
-http://192.168.0.50
+```bash
+ssh username@SERVER_IP
+cd ~
+sha256sum -c amt-tandd-offline-licensing-v1.23.2-lic-3.tar.gz.sha256
 ```
 
----
+Continue only if the checksum result is `OK`.
 
-# Step 7 — Login
+### 3. Extract the package
 
-Use the following login information:
-
-```text id="3vl3kg"
-Username: admin
-Password: admin123
+```bash
+mkdir -p ~/amt-tandd-install
+tar -xzf amt-tandd-offline-licensing-v1.23.2-lic-3.tar.gz \
+  -C ~/amt-tandd-install
+cd ~/amt-tandd-install/amt-tandd-offline-licensing-v1.23.2-lic-3
 ```
 
-You can now access the dashboard.
+### 4. Install and open the application
 
----
+```bash
+sudo ./install.sh
+```
 
-# Notes
+When installation finishes, open this address in a browser:
 
-* For this online procedure, internet access or endpoint whitelisting is required during installation and future system updates. The offline procedure does not require GitHub or Docker registry access on the target server.
-* If HTTPS is required, the default self-signed certificate must be replaced with a trusted SSL certificate provided by the customer IT team.
+```text
+http://SERVER_IP/
+```
+
+## License Activation — Both Methods
+
+1. Copy the Installation ID shown in the application.
+2. Send it to ADANWARE and request a license file.
+3. Upload the license file you receive.
+
+A **Trial** license expires on its stated date. A **Perpetual** license does not expire.
+
+## Login and Configuration
+
+Sign in with the administrator details provided for your installation. If you use the default login, the username is `admin` and the password is `admin123`. Change the default password after your first login.
+
+Follow the [System and Base Station Configuration Guide](./3-SETUP_AND_CONFIGURATION.md).

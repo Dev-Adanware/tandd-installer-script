@@ -1,132 +1,26 @@
-# AMT T&D v1.23.2 Offline Installation and Upgrade
+# AMT T&D Offline Upgrade
 
-This guide covers a new offline installation and the validated upgrade from **v1.23.1 to v1.23.2**. Use the [online deployment guide](./2-Deployment_USER_GUIDE.md) only for the existing GitHub-based installation path.
+For a new offline installation, package requests, checksum verification, and installation steps, use the [Deployment Guide](./2-Deployment_USER_GUIDE.md).
 
-## Obtain the package
+## Supported upgrade
 
-ADANWARE provides a password-protected [download link](https://cloud.dadi411-family.eu/s/YC8EFNkHxsQ8jFo). Obtain the password directly from ADANWARE. Download both files to a machine that can access the link:
+The validated offline upgrade is from **v1.23.1 to v1.23.2-lic-3**. Contact ADANWARE before upgrading from another version. Do not use the online installer for this offline upgrade.
 
-- `amt-tandd-offline-licensing-v1.23.2.tar.gz`
-- `amt-tandd-offline-licensing-v1.23.2.tar.gz.sha256`
+Before the maintenance window:
 
-The final release archive SHA-256 is `65017442ba21fe2316e17fdac86cc436f03091b9ec294b08f5d82ab0f12be450`. The package downloaded through the customer link passed SHA-256 verification. Stop and contact ADANWARE if either checksum verification below fails on your copy.
+1. Confirm the existing installation uses the supported version and standard `/opt/amt-tandd` location.
+2. Create and verify a PostgreSQL backup.
+3. Keep the existing data, license, configuration, SSL files, and backup safe.
+4. Obtain the upgrade package and checksum from ADANWARE, then follow the verification steps in the [Deployment Guide](./2-Deployment_USER_GUIDE.md).
 
-## Server requirements
-
-- x86-64/amd64 Linux server with Docker Engine and the Docker Compose plugin installed and functional.
-- Administrator or sudo access, plus sufficient storage for the included application images, PostgreSQL data, and backups.
-- Local network connectivity to monitoring devices and application users.
-- Correct system time and a reliable NTP source; license validation depends on time.
-- Python 3 on the target server for the package installer.
-
-The target server needs no internet access when these prerequisites and the complete package are available. It does not need a GitHub token or GitHub Container Registry access. See [IT prerequisites](./1-IT_Prerequisites.md) for server sizing and network requirements.
-
-## Install a new server
-
-Run steps 1 and 2 on the download machine. Replace `username` and `SERVER_IP` with your server details.
-
-### 1. Verify the downloaded archive
-
-From the directory containing both downloaded files:
-
-```bash
-sha256sum -c amt-tandd-offline-licensing-v1.23.2.tar.gz.sha256
-```
-
-Confirm that the result is `OK` and that the archive digest matches the published SHA-256 above. Do not extract an archive that fails verification.
-
-### 2. Transfer the archive
-
-```bash
-scp amt-tandd-offline-licensing-v1.23.2.tar.gz \
-  username@SERVER_IP:~/
-```
-
-Alternatively, transfer the verified archive using approved removable media.
-
-### 3. Extract it on the Linux server
-
-```bash
-mkdir -p ~/amt-tandd-install
-
-tar -xzf ~/amt-tandd-offline-licensing-v1.23.2.tar.gz \
-  -C ~/amt-tandd-install
-
-cd ~/amt-tandd-install/amt-tandd-offline-licensing-v1.23.2
-```
-
-### 4. Verify the files inside the package
-
-```bash
-sha256sum -c SHA256SUMS
-```
-
-Every listed file must report `OK`. Stop and contact ADANWARE if any check fails.
-
-### 5. Install
-
-```bash
-sudo ./install.sh
-```
-
-The installer verifies the package, loads the included Docker images locally, and starts the deployment with `--pull never`. Follow any installer prompts. Keep the archive and checksum file for your records.
-
-## First activation
-
-1. Open `http://SERVER_IP/` in a browser that can reach the server.
-2. The **Activation Required** page displays the Installation ID. Copy it and provide it to ADANWARE.
-3. ADANWARE issues a customer-specific signed v2 Trial or Perpetual `license.json`.
-4. Upload `license.json` through the activation page, then continue to login after successful activation.
-
-Activation is mandatory for a fresh installation; no trial is granted automatically. The browser and target server do not need internet access for activation; the license file is issued through your agreed process with ADANWARE.
-
-## Upgrade an existing customer installation
-
-The validated legacy upgrade path is **v1.23.1 → v1.23.2**. Versions older than v1.23.1 require an ADANWARE compatibility assessment. Do not use the online installer for this offline upgrade.
-
-Before starting:
-
-1. Confirm the installed application version, image, Compose project, PostgreSQL volume, and deployment layout. Stop and contact ADANWARE if the layout differs from the validated installation.
-2. Schedule a maintenance window and pause ingestion as required for a consistent backup.
-3. Create and verify a PostgreSQL backup. Preserve the application data, licensing state, environment credentials, SSL certificates, public keys, Compose files, and backup helper. Protect the backup and confirm the recovery procedure before proceeding.
-4. Verify the package as described above. Keep the previous package and images available for an approved recovery procedure.
-
-From the extracted v1.23.2 package directory, run:
+From the extracted package directory, run:
 
 ```bash
 sudo ./install.sh /opt/amt-tandd
 ```
 
-The installer checks the existing deployment and contains a guarded, one-time legacy Installation ID migration. **Do not bypass it.** If a preflight check fails, stop and contact ADANWARE. Do not alter identity files, credentials, or the PostgreSQL volume to force the upgrade. The installer preserves the existing data and starts the local images with `--pull never`.
+If an upgrade check fails, stop and contact ADANWARE. Do not delete Docker volumes or replace Installation ID files to force the upgrade.
 
-Afterward, compare application data and license state with the pre-upgrade record, then verify login, monitoring, reports, device ingestion, and backups.
+## After the upgrade
 
-## License management
-
-Signed v2 Trial licenses have an expiration date. Signed v2 Perpetual licenses do not expire. The final release also accepts existing v1 licenses. A valid license and its persistent Installation ID survive supported software upgrades and container recreation while the signing key remains trusted.
-
-Administrators can view the Installation ID and manage licenses under **Settings → About**. They can convert a Trial installation to Perpetual by uploading the customer-specific signed Perpetual `license.json` there; reinstalling is not required. License management is administrator-only. The **Offline Software Update** controls are displayed but disabled; use the approved offline installer for updates.
-
-## Verify the deployment
-
-Run these commands on the server. The Compose commands use the standard `/opt/amt-tandd` deployment path:
-
-```bash
-sudo systemctl status docker
-sudo docker compose --project-name amt-tandd \
-  --file /opt/amt-tandd/docker-compose.offline.yml ps
-sudo docker compose --project-name amt-tandd \
-  --file /opt/amt-tandd/docker-compose.offline.yml logs --tail=100 app postgres backup
-curl -i http://localhost/api/license/status
-```
-
-Review the `postgres` service status and logs for database health. The HTTP command checks the license-status endpoint; its unauthenticated response may be limited or require authentication and must not be used to infer that an Installation ID is missing. Open `http://SERVER_IP/` to check activation or login, and use **Settings → About** after administrator login. If the installation is still waiting for activation, copy the ID from the activation page. To recheck package integrity from the extracted package directory, run `sha256sum -c SHA256SUMS`; on the download machine, rerun the archive `.sha256` check above.
-
-## Troubleshooting and recovery
-
-- **Checksum failure:** Stop. Obtain fresh package files from ADANWARE and verify them before retrying.
-- **Docker or PostgreSQL unhealthy:** Save the Compose status and logs. Confirm Docker is running and the server has adequate storage. Contact ADANWARE if service health does not recover.
-- **Activation or license problem:** Check system time and NTP, preserve the displayed Installation ID and error details, and contact ADANWARE for license or identity recovery.
-- **Upgrade preflight or post-upgrade failure:** Stop further changes. Retain logs, the prior images, the verified backup, and the current data. Follow the approved recovery procedure with ADANWARE, using matching PostgreSQL and application-data backups when a restore is necessary.
-
-Never delete Docker volumes or manually replace identity files to troubleshoot. The offline deployment does not require a GitHub token.
+Open the application and check activation, login, device readings, reports, and backups. If a service does not start, save the installer output and contact ADANWARE. Keep the verified backup and do not make further changes until you receive help.

@@ -4,7 +4,7 @@
 
 This document describes the infrastructure, network, and system requirements required before deploying the AMT Monitoring System.
 
-Choose the deployment method before preparing the server: the [online installer](./2-Deployment_USER_GUIDE.md) requires the outbound access described in section 6.3; the [v1.23.2 offline package](./4-OFFLINE_DEPLOYMENT.md) uses local images and needs no GitHub token or registry access on the target server. Both methods need a working Docker Engine and Docker Compose plugin. The offline package supports x86-64/amd64 Linux servers.
+Choose online or offline installation in the [Deployment Guide](./2-Deployment_USER_GUIDE.md). Online installation requires the outbound access described in section 6.3 and a GitHub token from ADANWARE. For offline installation, request the package and checksum from ADANWARE; the target server needs no internet or registry access. Both methods require a Linux server with Docker Engine and Docker Compose. The offline package supports x86-64/amd64 servers and requires Python 3.
 
 ---
 
@@ -199,7 +199,7 @@ Internet access or the required endpoint whitelisting is only needed for install
 
 Blocking any of these endpoints may cause deployment or image pull failures.
 
-These endpoints are **not required on the target server for v1.23.2 offline installation or upgrade** when Docker prerequisites and the complete verified package are available. Obtain the package on a separate download machine and transfer it using approved media or network access. See the [offline deployment guide](./4-OFFLINE_DEPLOYMENT.md).
+These endpoints are **not required on the target server for offline installation or upgrade** when Docker prerequisites and the complete verified package are available. Request the package from ADANWARE, then transfer it using approved media or network access. See the [Deployment Guide](./2-Deployment_USER_GUIDE.md) for both installation methods.
 
 ---
 
