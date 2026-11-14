@@ -88,6 +88,6 @@ A **Trial** license expires on its stated date. A **Perpetual** license does not
 
 ## Login and Configuration
 
-Sign in with the administrator details provided for your installation. If you use the default login, the username is `admin` and the password is `admin123`. Change the default password after your first login.
+Sign in with the administrator details provided for your installation. Change the default password after your first login.
 
 Follow the [System and Base Station Configuration Guide](./3-SETUP_AND_CONFIGURATION.md).
