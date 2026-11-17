@@ -3,7 +3,6 @@
 set -e
 set -o pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LEGACY_UPGRADE=false
 FRESH_INSTALL=true
 PARTIAL_INSTALL_RESUME=false
 PARTIAL_INSTALL_MARKER_PRESENT=false
@@ -51,20 +50,6 @@ validate_safe_install_env() {
     for name in POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD JWT_SECRET_KEY; do
         [ "$(grep -c "^${name}=" "$env_file" || true)" -eq 1 ] || return 1
     done
-}
-classify_existing_app_image() {
-    local image_tag="${1%@*}"
-    case "$image_tag" in
-        ghcr.io/dev-adanware/tanddsrv:1.23.1)
-            LEGACY_UPGRADE=true
-            ;;
-        ghcr.io/dev-adanware/tanddsrv:v1.23.2-lic-2|ghcr.io/dev-adanware/tanddsrv:v1.23.2-lic-3|ghcr.io/dev-adanware/tanddsrv:v1.24.0-rc2|ghcr.io/dev-adanware/tanddsrv:v1.24.0-rc3|ghcr.io/dev-adanware/tanddsrv:${APP_VERSION})
-            ;;
-        *)
-            echo "❌ Existing application image is not a supported baseline or pinned target." >&2
-            return 1
-            ;;
-    esac
 }
 prepare_embedded_assets() {
     for tool in base64 sha256sum mktemp chmod rm; do
@@ -8737,103 +8722,8 @@ if project_containers=$(sudo docker ps -a --filter 'label=com.docker.compose.pro
             fi
             exit 1
         fi
-        FRESH_INSTALL=false
-        legacy_containers=$(printf '%s\n' tandd-app tandd-backup tandd-postgres | sort)
-        worker_containers=$(printf '%s\n' tandd-app tandd-postgres tandd-restore-worker | sort)
-        transition_containers=$(printf '%s\n' tandd-app tandd-backup tandd-postgres tandd-restore-worker | sort)
-        if [ "$project_containers" = "$legacy_containers" ]; then
-            LEGACY_BACKUP_CONTAINER=true
-            RESTORE_WORKER_CONTAINER=false
-        elif [ "$project_containers" = "$worker_containers" ]; then
-            LEGACY_BACKUP_CONTAINER=false
-            RESTORE_WORKER_CONTAINER=true
-        elif [ "$project_containers" = "$transition_containers" ]; then
-            LEGACY_BACKUP_CONTAINER=true
-            RESTORE_WORKER_CONTAINER=true
-        else
-            echo "❌ Existing Compose project has unexpected or missing containers; refusing upgrade."
-            exit 1
-        fi
-        active_image=$(sudo docker inspect --format '{{.Config.Image}}' tandd-app)
-        if ! classify_existing_app_image "$active_image"; then
-            exit 1
-        fi
-        for pair in tandd-app:app tandd-postgres:postgres; do
-            container=${pair%%:*}
-            service=${pair#*:}
-            project=$(sudo docker inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' "$container")
-            actual_service=$(sudo docker inspect --format '{{ index .Config.Labels "com.docker.compose.service" }}' "$container")
-            state=$(sudo docker inspect --format '{{.State.Status}}' "$container")
-            if [ "$project" != amt-tandd ] || [ "$actual_service" != "$service" ]; then
-                echo "❌ Existing container $container has unexpected Compose identity."
-                exit 1
-            fi
-            if [ "$state" != running ]; then
-                echo "❌ Existing application/PostgreSQL container $container is not running."
-                exit 1
-            fi
-        done
-        if [ "$LEGACY_BACKUP_CONTAINER" = true ]; then
-            container=tandd-backup
-            project=$(sudo docker inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' "$container")
-            actual_service=$(sudo docker inspect --format '{{ index .Config.Labels "com.docker.compose.service" }}' "$container")
-            if [ "$project" != amt-tandd ] || [ "$actual_service" != backup ]; then
-                echo "❌ Existing backup container has unexpected Compose identity."
-                exit 1
-            fi
-        fi
-        if [ "$RESTORE_WORKER_CONTAINER" = true ]; then
-            container=tandd-restore-worker
-            project=$(sudo docker inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' "$container")
-            actual_service=$(sudo docker inspect --format '{{ index .Config.Labels "com.docker.compose.service" }}' "$container")
-            state=$(sudo docker inspect --format '{{.State.Status}}' "$container")
-            if [ "$project" != amt-tandd ] || [ "$actual_service" != restore-worker ] || [ "$state" != running ]; then
-                echo "❌ Existing restore worker is not running under the expected Compose service."
-                exit 1
-            fi
-        fi
-        [ -f /opt/amt-tandd/docker-compose.yml ] && [ ! -L /opt/amt-tandd/docker-compose.yml ] && \
-            [ -f /opt/amt-tandd/.env ] && [ ! -L /opt/amt-tandd/.env ] && \
-            [ -d /opt/amt-tandd/tandd-data ] && [ ! -L /opt/amt-tandd/tandd-data ] && \
-            [ -d /opt/amt-tandd/tandd-data/backups ] && [ ! -L /opt/amt-tandd/tandd-data/backups ] && \
-            [ -d /opt/amt-tandd/ssl-certs ] && [ ! -L /opt/amt-tandd/ssl-certs ] || {
-            echo "❌ Existing Compose, credentials, data, backups, or SSL paths are missing or unsafe."
-            exit 1
-        }
-        for setting in POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD; do
-            grep -Eq "^${setting}=.+$" /opt/amt-tandd/.env || {
-                echo "❌ Existing .env is missing a non-empty ${setting}."; exit 1;
-            }
-        done
-        sudo docker compose --project-name amt-tandd --file /opt/amt-tandd/docker-compose.yml config --quiet || {
-            echo "❌ Existing Compose configuration is invalid; refusing upgrade."; exit 1;
-        }
-        volume=$(sudo docker volume inspect --format '{{.Name}}' amt-tandd_postgres_data)
-        postgres_mount=$(sudo docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/postgresql/data"}}{{.Type}}:{{.Name}}{{end}}{{end}}' tandd-postgres)
-        app_data_mount=$(sudo docker inspect --format '{{range .Mounts}}{{if eq .Destination "/app/data"}}{{.Type}}:{{.Source}}{{end}}{{end}}' tandd-app)
-        app_ssl_mount=$(sudo docker inspect --format '{{range .Mounts}}{{if eq .Destination "/etc/nginx/ssl"}}{{.Type}}:{{.Source}}{{end}}{{end}}' tandd-app)
-        app_image=$(sudo docker inspect --format '{{.Config.Image}}' tandd-app)
-        postgres_image=$(sudo docker inspect --format '{{.Config.Image}}' tandd-postgres)
-        [ "$volume" = amt-tandd_postgres_data ] && \
-            [ "$postgres_mount" = volume:amt-tandd_postgres_data ] && \
-            [ "$app_data_mount" = bind:/opt/amt-tandd/tandd-data ] && \
-            [ "$app_ssl_mount" = bind:/opt/amt-tandd/ssl-certs ] && \
-            [ "$postgres_image" = postgres:16-alpine ] || {
-            echo "❌ Existing database volume, image, or durable mounts do not match the supported layout."
-            exit 1
-        }
-        if [ "$LEGACY_BACKUP_CONTAINER" = true ]; then
-            backup_mount=$(sudo docker inspect --format '{{range .Mounts}}{{if eq .Destination "/backups"}}{{.Type}}:{{.Source}}{{end}}{{end}}' tandd-backup)
-            backup_image=$(sudo docker inspect --format '{{.Config.Image}}' tandd-backup)
-            [ "$backup_mount" = bind:/opt/amt-tandd/tandd-data/backups ] && \
-                [ "$backup_image" = postgres:16-alpine ] || {
-                echo "❌ Existing backup mount or image does not match the supported layout."
-                exit 1
-            }
-        fi
-        if [ "$LEGACY_UPGRADE" = true ] && [ "$app_image" != ghcr.io/dev-adanware/tanddsrv:1.23.1 ]; then
-            echo "❌ Legacy migration preflight changed while being checked."; exit 1
-        fi
+        echo "❌ An AMT T&D deployment already exists. This installer supports clean installations only; it will not modify or remove existing containers, databases, or customer data." >&2
+        exit 1
     else
         partial_marker=/opt/amt-tandd/.lic3-install-in-progress
         if sudo test -e "$partial_marker" || sudo test -L "$partial_marker"; then
@@ -9098,12 +8988,6 @@ unset JWT_SECRET_KEY
 ### -------------------------------
 
 echo "Creating docker-compose configuration..."
-
-if [ "$LEGACY_UPGRADE" = true ]; then
-    LEGACY_COMPOSE_BACKUP="/opt/amt-tandd/docker-compose.yml.pre-v1.23.2-$(date -u +%Y%m%dT%H%M%SZ)"
-    [ ! -e "$LEGACY_COMPOSE_BACKUP" ] || { echo "❌ Existing legacy Compose backup path; refusing overwrite."; exit 1; }
-    sudo cp -a /opt/amt-tandd/docker-compose.yml "$LEGACY_COMPOSE_BACKUP"
-fi
 
 sudo tee /opt/amt-tandd/backup_postgres.sh >/dev/null <<'BACKUP_SCRIPT'
 #!/bin/sh
@@ -9442,13 +9326,6 @@ if [ "$FRESH_INSTALL" = true ] && [ ! -e "$MAINTENANCE_STATE" ] && [ ! -L "$MAIN
     fi
 fi
 
-if [ "$LEGACY_UPGRADE" = true ]; then
-    LEGACY_MIGRATION_IMAGE="ghcr.io/dev-adanware/tanddsrv:v1.23.2-lic-3"
-    sudo docker pull "$LEGACY_MIGRATION_IMAGE"
-    sudo "$EMBEDDED_ASSET_DIR/migrate_legacy_identity.sh" \
-        /opt/amt-tandd "$LEGACY_MIGRATION_IMAGE" v1.23.2
-fi
-
 ### -------------------------------
 ### 8. START SERVICES
 ### -------------------------------
@@ -9525,18 +9402,8 @@ if [ "$FRESH_INSTALL" = true ]; then
     sudo rm -f "$audit_report"
     trap - ERR
 else
-    sudo chown root:10001 /opt/amt-tandd/tandd-data/backups
-    sudo chmod 2770 /opt/amt-tandd/tandd-data/backups
-    if [ "$RESTORE_WORKER_CONTAINER" = true ]; then
-        sudo /opt/amt-tandd/restore_coordinator/provision.sh sync-application-version "$APP_VERSION"
-    else
-        sudo /opt/amt-tandd/restore_coordinator/provision.sh install \
-            /opt/amt-tandd /opt/amt-tandd/docker-compose.yml 0 0 amt-tandd
-        sudo /opt/amt-tandd/restore_coordinator/provision.sh sync-application-version "$APP_VERSION"
-    fi
-    sudo docker compose --project-name amt-tandd --project-directory /opt/amt-tandd \
-        --file /opt/amt-tandd/docker-compose.yml up -d --force-recreate app restore-worker
-    sudo docker rm -f tandd-backup >/dev/null 2>&1 || true
+    echo "❌ Existing deployments are not supported by this clean-install installer; no upgrade or uninstall was attempted." >&2
+    exit 1
 fi
 
 echo "✅ Services started (PostgreSQL + Application + Restore worker)"
