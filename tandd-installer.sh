@@ -8520,6 +8520,12 @@ legacy_partial_install_preflight_adopt() {
     fi
     legacy_partial_install_is_safe_to_adopt "$root"
 }
+refuse_existing_postgres_volume() {
+    if sudo docker volume inspect amt-tandd_postgres_data >/dev/null 2>&1; then
+        echo "❌ Existing PostgreSQL volume amt-tandd_postgres_data found; clean installation refused to protect customer data. No deployment changes were made." >&2
+        return 1
+    fi
+}
 create_partial_install_marker() {
     local root="$1" marker temporary
     marker="$root/.lic3-install-in-progress"
@@ -8591,10 +8597,7 @@ remove_partial_install_marker() {
 }
 print_partial_container_recovery() {
     echo "❌ A LIC-3 marked installation has a partial Compose container set; automatic database provisioning is unsafe." >&2
-    echo "After confirming this is the intended amt-tandd project, stop and remove only its containers (the named PostgreSQL volume and host data are retained):" >&2
-    echo "  sudo docker compose --project-name amt-tandd --project-directory /opt/amt-tandd --file /opt/amt-tandd/docker-compose.yml stop" >&2
-    echo "  sudo docker compose --project-name amt-tandd --project-directory /opt/amt-tandd --file /opt/amt-tandd/docker-compose.yml rm -f" >&2
-    echo "Then rerun this installer. Do not use 'down -v' or remove the PostgreSQL volume or /opt/amt-tandd/tandd-data." >&2
+    echo "❌ This installer will not resume provisioning against an existing deployment. Preserve its PostgreSQL volume and host data; contact support for recovery." >&2
 }
 prepare_embedded_assets || exit 1
 if [ "${1:-}" = "--verify-embedded-assets" ]; then
@@ -8710,6 +8713,10 @@ else
     echo "✅ Docker version verified ($DOCKER_VERSION)"
 fi
 
+# Clean installs must never reuse a PostgreSQL volume, including from a marked partial install.
+# Check before marker cleanup, provisioning, or any deployment/configuration changes.
+refuse_existing_postgres_volume || exit 1
+
 # Detect and validate an existing stack before creating/changing any files.
 if project_containers=$(sudo docker ps -a --filter 'label=com.docker.compose.project=amt-tandd' --format '{{.Names}}' | sort); then
     if [ -n "$project_containers" ]; then
@@ -8748,8 +8755,8 @@ if project_containers=$(sudo docker ps -a --filter 'label=com.docker.compose.pro
             echo "❌ A PostgreSQL volume appeared during legacy partial-state adoption; refusing to continue." >&2
             exit 1
         fi
-        if sudo docker volume inspect amt-tandd_postgres_data >/dev/null 2>&1 && [ "$PARTIAL_INSTALL_RESUME" != true ]; then
-            echo "❌ Existing application container or PostgreSQL volume has no verified Compose project."
+        if sudo docker volume inspect amt-tandd_postgres_data >/dev/null 2>&1; then
+            echo "❌ Existing PostgreSQL volume amt-tandd_postgres_data found; clean installation refused to protect customer data." >&2
             exit 1
         fi
         if [ "$PARTIAL_INSTALL_RESUME" != true ]; then
