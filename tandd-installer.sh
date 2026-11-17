@@ -9527,7 +9527,13 @@ if [ "$FRESH_INSTALL" = true ]; then
 else
     sudo chown root:10001 /opt/amt-tandd/tandd-data/backups
     sudo chmod 2770 /opt/amt-tandd/tandd-data/backups
-    sudo /opt/amt-tandd/restore_coordinator/provision.sh sync-application-version "$APP_VERSION"
+    if [ "$RESTORE_WORKER_CONTAINER" = true ]; then
+        sudo /opt/amt-tandd/restore_coordinator/provision.sh sync-application-version "$APP_VERSION"
+    else
+        sudo /opt/amt-tandd/restore_coordinator/provision.sh install \
+            /opt/amt-tandd /opt/amt-tandd/docker-compose.yml 0 0 amt-tandd
+        sudo /opt/amt-tandd/restore_coordinator/provision.sh sync-application-version "$APP_VERSION"
+    fi
     sudo docker compose --project-name amt-tandd --project-directory /opt/amt-tandd \
         --file /opt/amt-tandd/docker-compose.yml up -d --force-recreate app restore-worker
     sudo docker rm -f tandd-backup >/dev/null 2>&1 || true
