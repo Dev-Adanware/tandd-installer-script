@@ -256,7 +256,7 @@ This creates the following tables:
 
 ## 9. Backup & Restore
 
-SMS configuration and recipient data are included in the system's backup and restore operations. When you export a backup, the following tables are saved:
+SMS configuration and recipient data are included in a **Settings & Configuration** backup and in a full database backup. Backups are created manually from **Settings** → **Backup/Restore**; the application does not create scheduled backups. The Settings backup includes:
 - `sms_settings`
 - `sms_recipients`
 - `sms_recipient_department`

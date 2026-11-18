@@ -1,8 +1,10 @@
 # AMT T&D Deployment Guide
 
-Before starting, check the [IT prerequisites](./1-IT_Prerequisites.md). Both methods need a Linux server with Docker, Docker Compose, SSH access, and sudo privileges. Online installation needs internet access and a GitHub token from ADANWARE. Offline installation needs Python 3; the server does not need internet access.
+Before starting, check the [IT prerequisites](./1-IT_Prerequisites.md). Both methods need a Linux server with Docker, Docker Compose, SSH access, and sudo privileges. Online installation needs internet access and a GitHub token from ADANWARE. Offline installation needs Python 3; the server does not need internet access. The available online release is v1.24.0 and the available offline release is v1.23.2-lic-3. An offline v1.24.0 package is not yet available.
 
-## Option A — Online Installation (`v1.23.2-lic-3`)
+## Option A — Online Installation (`v1.24.0`)
+
+The v1.24.0 online installer supports clean installations only. If you already have an AMT T&D installation, contact ADANWARE before replacing or changing it.
 
 ### 1. Connect to the server
 

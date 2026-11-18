@@ -146,6 +146,10 @@ After deploying the AMT-T&D software, you need to configure the Base Station to 
 ### 3.6. Backup and Restore
 - [ ] Go to **Settings** → **Backup/Restore**.
 - [ ] Select `Backup/Restore Station` from the top tabs.
+- Backups are manual. Choose a scope and select **Download Backup** whenever you want to create a backup; the application does not create scheduled backups.
+- Available scopes are **Database Backup** (all PostgreSQL application data and settings), **Settings & Configuration** (users, departments, devices, and integrations), and **Sensor Data** (readings and historical warnings).
+- Save downloaded `.amtbackup` files somewhere outside the application server so they remain available if that server is unavailable.
+- To restore, choose a backup file, review its scope, and select **Start Restore** once. The application validates it before changing application data and displays progress. A full restore replaces the included database data with the selected snapshot; a Sensor Data restore merges readings and historical warnings while preserving settings and device configuration.
 <p align="center">
   <img src="./images/amt-backup.png" width="700">
 </p>

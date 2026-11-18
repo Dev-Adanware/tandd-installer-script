@@ -1,5 +1,7 @@
 # AMT T&D Offline Upgrade
 
+The available offline release is **v1.23.2-lic-3**. The v1.24.0 release is currently available for online clean installations only; an offline v1.24.0 package is not yet available. Existing customers should contact ADANWARE before replacing or changing an installation.
+
 For a new offline installation, package requests, checksum verification, and installation steps, use the [Deployment Guide](./2-Deployment_USER_GUIDE.md).
 
 ## Supported upgrade
