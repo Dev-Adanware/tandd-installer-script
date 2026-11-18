@@ -14,8 +14,8 @@ LEGACY_PARTIAL_ADOPTED=false
 #################################################
 
 # Pin the reviewed application release; update explicitly for a new release.
-APP_VERSION="v1.24.0-rc4"
-APP_IMAGE_REF="ghcr.io/dev-adanware/tanddsrv:${APP_VERSION}@sha256:f6b3624f4c17335feb36d8a2094ced770aaea0b0fc364479bde8f7499e9bd956"
+APP_VERSION="v1.24.0"
+APP_IMAGE_REF="ghcr.io/dev-adanware/tanddsrv:${APP_VERSION}@sha256:c5b651e741b11884f53b40f62f864243028f3c61524f858915a7ed5ae3636ae2"
 LICENSE_TRUSTED_KEY_ID="${LICENSE_TRUSTED_KEY_ID-adanware-prod-v2}"
 PRODUCTION_KEY_IDS=(adanware-prod-v2 production-2026)
 PRODUCTION_FINGERPRINTS=(d77cd0fbc4b570191f811117bede664cf495eb4e48ea4571552c7d856f46911e a1dae0d846ac59f26541d49b8b7d6264949a54b8dedfc28c08875c7703480244)
@@ -9211,7 +9211,7 @@ services:
       retries: 5
 
   app:
-    image: ghcr.io/dev-adanware/tanddsrv:APP_VERSION_PLACEHOLDER@sha256:f6b3624f4c17335feb36d8a2094ced770aaea0b0fc364479bde8f7499e9bd956
+    image: ghcr.io/dev-adanware/tanddsrv:APP_VERSION_PLACEHOLDER@sha256:c5b651e741b11884f53b40f62f864243028f3c61524f858915a7ed5ae3636ae2
     container_name: tandd-app
     environment:
       DATABASE_URL: ${TANDD_APP_DATABASE_URL:-postgresql://${POSTGRES_USER:-tandd_user}:${POSTGRES_PASSWORD:-changeme123}@postgres:5432/${POSTGRES_DB:-tandd}}
@@ -9241,7 +9241,7 @@ services:
     restart: unless-stopped
 
   restore-worker:
-    image: ghcr.io/dev-adanware/tanddsrv:APP_VERSION_PLACEHOLDER@sha256:f6b3624f4c17335feb36d8a2094ced770aaea0b0fc364479bde8f7499e9bd956
+    image: ghcr.io/dev-adanware/tanddsrv:APP_VERSION_PLACEHOLDER@sha256:c5b651e741b11884f53b40f62f864243028f3c61524f858915a7ed5ae3636ae2
     user: "10001:10001"
     container_name: tandd-restore-worker
     group_add:
